@@ -29,8 +29,17 @@ public class ProjetosFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_projetos, container, false);
+        View view = inflater.inflate(R.layout.fragment_projetos, container, false);
+
+        // Botão para adicionar projeto (igual ao da Home)
+        view.findViewById(R.id.btnAddProjeto).setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), ProjetoDetalheActivity.class);
+            startActivity(intent);
+        });
+
+        return view;
     }
+
 
     @Override
     public void onResume() {
@@ -49,6 +58,7 @@ public class ProjetosFragment extends Fragment {
             listaProjetos = projetos;
             ordenarProjetos(listaProjetos, containerProjetos);
         });
+
     }
 
     private void ordenarProjetos(List<Projeto> projetos, LinearLayout layout) {

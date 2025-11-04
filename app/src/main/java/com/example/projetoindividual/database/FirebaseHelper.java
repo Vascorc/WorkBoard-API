@@ -71,13 +71,18 @@ public class FirebaseHelper {
 
     // Adicionar uma tarefa a um projeto
     public static void adicionarTarefa(String projetoId, Tarefa tarefa, FirebaseCallback<Boolean> callback) {
-        // 1️⃣ Adiciona na subcoleção "tarefas"
         db.collection("projetos")
                 .document(projetoId)
                 .collection("tarefas")
                 .add(tarefa)
                 .addOnSuccessListener(docRef -> {
-                    // 2️⃣ Atualiza a lista de tarefas do projeto
+                    // GUARDA O ID GERADO PELO FIREBASE
+                    tarefa.id = docRef.getId();
+                    tarefa.projetoId = projetoId;
+
+                    // Atualiza o documento com o ID dentro dele
+                    docRef.set(tarefa);
+
                     db.collection("projetos")
                             .document(projetoId)
                             .update("tarefas", FieldValue.arrayUnion(tarefa))

@@ -1,6 +1,7 @@
 package com.example.projetoindividual.ui.calendario;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,18 +35,23 @@ public class CalendarioFragment extends Fragment {
         calendar = root.findViewById(R.id.calendarView);
         containerTarefas = root.findViewById(R.id.containerTarefas);
 
-        // Buscar projetos do Firebase
+        calendar.setCurrentDate(CalendarDay.today());
+        calendar.setSelectedDate(CalendarDay.today());
+
         FirebaseHelper.getAllProjectsForCurrentUser((projetos, error) -> {
-            if (error != null) {
-                // Aqui você pode mostrar uma mensagem de erro
-                return;
-            }
+            if (error != null) return;
 
             listaProjetos = projetos;
+
+            // Depuração
+            for (Projeto projeto : listaProjetos) {
+                int qtdTarefas = projeto.tarefas != null ? projeto.tarefas.size() : 0;
+                Log.d("Calendario", "Projeto: " + projeto.nome + ", tarefas: " + qtdTarefas);
+            }
+
             marcarDiasComTarefas();
         });
 
-        // Listener para clicar nos dias
         calendar.setOnDateChangedListener((widget, date, selected) -> mostrarTarefasDoDia(date));
 
         return root;
@@ -58,32 +64,38 @@ public class CalendarioFragment extends Fragment {
             if (projeto.tarefas == null) continue;
 
             for (Tarefa tarefa : projeto.tarefas) {
-                String[] parts = tarefa.dataConclusao.split("-");
-                int ano = Integer.parseInt(parts[0]);
-                int mes = Integer.parseInt(parts[1]);
-                int dia = Integer.parseInt(parts[2]);
+                if (tarefa.concluida) continue;
+                if (tarefa.dataConclusao == null || tarefa.dataConclusao.isEmpty()) continue;
 
-                // Mes no CalendarDay é 1-based, então mantemos assim
-                if (ano == date.getYear() && mes == date.getMonth() && dia == date.getDay()) {
-                    // Inflar o layout do card da tarefa
+                String[] parts = tarefa.dataConclusao.split("-");
+                if (parts.length != 3) continue;
+
+                int ano, mes, dia;
+                try {
+                    ano = Integer.parseInt(parts[0]);
+                    mes = Integer.parseInt(parts[1]); // 1-based do Firebase
+                    dia = Integer.parseInt(parts[2]);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                    continue;
+                }
+
+                // Corrige mês: date.getMonth() é 0-based
+                if (ano == date.getYear() && mes == (date.getMonth() + 1) && dia == date.getDay()) {
                     View card = LayoutInflater.from(getContext())
                             .inflate(R.layout.item_tarefa, containerTarefas, false);
 
-                    // Encontrar os TextViews dentro do card
                     TextView tituloTarefa = card.findViewById(R.id.textTituloTarefa);
                     TextView nomeProjeto = card.findViewById(R.id.textNomeProjeto);
 
-                    // Definir os textos com os dados reais da tarefa e do projeto
                     tituloTarefa.setText(tarefa.titulo);
                     nomeProjeto.setText(projeto.nome);
 
-                    // Adicionar o card ao container
                     containerTarefas.addView(card);
                 }
             }
         }
     }
-
     private void marcarDiasComTarefas() {
         int corAzulHevy = getResources().getColor(R.color.hevy_blue);
 
@@ -91,14 +103,29 @@ public class CalendarioFragment extends Fragment {
             if (projeto.tarefas == null) continue;
 
             for (Tarefa tarefa : projeto.tarefas) {
-                String[] parts = tarefa.dataConclusao.split("-");
-                int ano = Integer.parseInt(parts[0]);
-                int mes = Integer.parseInt(parts[1]);
-                int dia = Integer.parseInt(parts[2]);
+                // Ignora tarefas sem data ou já concluídas
+                if (tarefa.dataConclusao == null || tarefa.dataConclusao.isEmpty()) continue;
+                if (tarefa.concluida) continue;
 
-                CalendarDay day = CalendarDay.from(ano, mes, dia);
+                String[] parts = tarefa.dataConclusao.split("-");
+                if (parts.length != 3) continue;
+
+                int ano, mes, dia;
+                try {
+                    ano = Integer.parseInt(parts[0]);
+                    mes = Integer.parseInt(parts[1]); // 1-based do Firebase
+                    dia = Integer.parseInt(parts[2]);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                    continue;
+                }
+
+                // Subtrair 1 do mês para CalendarDay (0-based)
+                CalendarDay day = CalendarDay.from(ano, mes - 1, dia);
                 calendar.addDecorator(new DiaComTarefaDecorator(day, corAzulHevy));
             }
         }
     }
+
+
 }

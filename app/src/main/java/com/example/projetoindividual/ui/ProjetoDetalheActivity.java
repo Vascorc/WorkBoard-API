@@ -1,5 +1,6 @@
 package com.example.projetoindividual.ui;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.view.Gravity;
@@ -7,11 +8,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.Color;
 
 import com.example.projetoindividual.R;
 import com.example.projetoindividual.database.FirebaseHelper;
@@ -19,6 +23,9 @@ import com.example.projetoindividual.model.Projeto;
 import com.example.projetoindividual.model.Tarefa;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
+import java.util.Calendar;
 
 public class ProjetoDetalheActivity extends AppCompatActivity {
 
@@ -27,6 +34,7 @@ public class ProjetoDetalheActivity extends AppCompatActivity {
 
     private LinearLayout containerConteudo;
     private MaterialButton btnTarefas, btnResponsaveis;
+    private MaterialButton btnAdicionarTarefa;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +44,9 @@ public class ProjetoDetalheActivity extends AppCompatActivity {
         // Pega a toolbar do layout e define como ActionBar
         MaterialToolbar toolbar = findViewById(R.id.toolbarProjeto);
         setSupportActionBar(toolbar);
+
+        btnAdicionarTarefa = findViewById(R.id.btnAdicionarTarefa);
+        btnAdicionarTarefa.setOnClickListener(v -> abrirDialogAdicionarTarefa());
 
         // Habilita seta de voltar
         if (getSupportActionBar() != null) {
@@ -92,9 +103,9 @@ public class ProjetoDetalheActivity extends AppCompatActivity {
         btnResponsaveis.setOnClickListener(v -> mostrarResponsaveis());
     }
 
-
     private void mostrarTarefas() {
         containerConteudo.removeAllViews();
+        btnAdicionarTarefa.setVisibility(View.VISIBLE); // mostra o botão
 
         for (Tarefa tarefa : projeto.tarefas) {
             View itemView = getLayoutInflater().inflate(R.layout.detalhe_tarefa, containerConteudo, false);
@@ -118,7 +129,7 @@ public class ProjetoDetalheActivity extends AppCompatActivity {
                     if (success) {
                         Toast.makeText(this, "Tarefa removida", Toast.LENGTH_SHORT).show();
                         projeto.tarefas.remove(tarefa);
-                        mostrarTarefas(); // atualiza a lista
+                        mostrarTarefas();
                     } else {
                         Toast.makeText(this, "Erro ao remover tarefa: " + error, Toast.LENGTH_SHORT).show();
                     }
@@ -129,9 +140,9 @@ public class ProjetoDetalheActivity extends AppCompatActivity {
         }
     }
 
-
     private void mostrarResponsaveis() {
         containerConteudo.removeAllViews();
+        btnAdicionarTarefa.setVisibility(View.GONE); // esconde o botão
 
         for (String email : projeto.users) {
             TextView txtUser = new TextView(this);
@@ -204,6 +215,71 @@ public class ProjetoDetalheActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void abrirDialogAdicionarTarefa() {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_nova_tarefa, null);
+        EditText edtTitulo = dialogView.findViewById(R.id.edtTituloTarefa);
+        EditText edtData = dialogView.findViewById(R.id.edtDataTarefa);
+
+        // Faz o campo de data não focável, para abrir apenas o DatePicker
+        edtData.setFocusable(false);
+        edtData.setClickable(true);
+
+        // Abre DatePicker ao clicar
+        edtData.setOnClickListener(v -> {
+            Calendar calendar = Calendar.getInstance();
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+            DatePickerDialog datePicker = new DatePickerDialog(this, (view, selectedYear, selectedMonth, selectedDay) -> {
+                // Formata a data como YYYY-MM-DD
+                String dataFormatada = String.format("%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
+                edtData.setText(dataFormatada);
+            }, year, month, day);
+
+            datePicker.show();
+        });
+
+        // Cria o builder do diálogo
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
+        builder.setView(dialogView);
+
+        final androidx.appcompat.app.AlertDialog dialog = builder.create();
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        MaterialButton btnAdicionar = dialogView.findViewById(R.id.btnAdicionar);
+        MaterialButton btnCancelar = dialogView.findViewById(R.id.btnCancelar);
+
+        btnAdicionar.setOnClickListener(v -> {
+            String titulo = edtTitulo.getText().toString().trim();
+            String data = edtData.getText().toString().trim();
+
+            if (titulo.isEmpty()) {
+                Toast.makeText(this, "O título não pode estar vazio", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Tarefa novaTarefa = new Tarefa();
+            novaTarefa.titulo = titulo;
+            novaTarefa.dataConclusao = data;
+            novaTarefa.concluida = false;
+
+            FirebaseHelper.adicionarTarefa(projeto.id, novaTarefa, (success, error) -> {
+                if (success) {
+                    projeto.tarefas.add(novaTarefa);
+                    mostrarTarefas(); // Atualiza a lista imediatamente
+                    Toast.makeText(this, "Tarefa adicionada!", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                } else {
+                    Toast.makeText(this, "Erro ao adicionar tarefa: " + error, Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
+        btnCancelar.setOnClickListener(v -> dialog.dismiss());
+        dialog.show();
     }
 
 }

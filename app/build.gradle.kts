@@ -46,6 +46,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 dependencies {
     // Kotlin
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.22")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
 
     // AndroidX + Material
     implementation("androidx.appcompat:appcompat:1.6.1")

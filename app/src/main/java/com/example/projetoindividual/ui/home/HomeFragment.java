@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -65,6 +66,13 @@ public class HomeFragment extends Fragment {
             // Mostrar cards na home
             ordenarProjetos(listaProjetos, binding.containerProjetos);
         });
+
+        // Configura o botão para abrir a AddProjetoActivity
+        binding.btnAddProjeto.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), AddProjetoActivity.class);
+            startActivity(intent);
+        });
+
     }
 
 
@@ -107,8 +115,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        FloatingActionButton fab = requireActivity().findViewById(R.id.fab);
-        fab.setOnClickListener(null); // limpar listener
         binding = null;
     }
 

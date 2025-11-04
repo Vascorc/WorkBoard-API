@@ -1,5 +1,8 @@
 package com.example.projetoindividual;
 
+import android.app.DatePickerDialog;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.InputType;
 import android.widget.EditText;
@@ -13,9 +16,12 @@ import com.example.projetoindividual.model.Projeto;
 import com.example.projetoindividual.model.Tarefa;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class AddProjetoActivity extends AppCompatActivity {
@@ -53,6 +59,7 @@ public class AddProjetoActivity extends AppCompatActivity {
         btnSalvarProjeto.setOnClickListener(v -> salvarProjeto());
     }
 
+
     private void adicionarTarefa() {
         LinearLayout tarefaLayout = new LinearLayout(this);
         tarefaLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -62,25 +69,48 @@ public class AddProjetoActivity extends AppCompatActivity {
         ));
         tarefaLayout.setPadding(0, 8, 0, 8);
 
-        EditText editTarefaNome = new EditText(this);
+        // Nome da tarefa
+        TextInputEditText editTarefaNome = new TextInputEditText(this);
         editTarefaNome.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
         editTarefaNome.setHint("Nome da tarefa");
-        editTarefaNome.setTextColor(getResources().getColor(android.R.color.white, null));
-        editTarefaNome.setHintTextColor(getResources().getColor(android.R.color.white, null));
-        editTarefaNome.getBackground().mutate().setTint(getResources().getColor(android.R.color.white, null));
+        editTarefaNome.setTextColor(Color.parseColor("#FFFFFF"));
+        editTarefaNome.setHintTextColor(Color.parseColor("#FFFFFF"));
 
-        EditText editTarefaData = new EditText(this);
+        // Data da tarefa
+        TextInputEditText editTarefaData = new TextInputEditText(this);
         editTarefaData.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
-        editTarefaData.setHint("Data (yyyy-MM-dd)");
-        editTarefaData.setInputType(InputType.TYPE_CLASS_DATETIME);
-        editTarefaData.setTextColor(getResources().getColor(android.R.color.white, null));
-        editTarefaData.setHintTextColor(getResources().getColor(android.R.color.white, null));
-        editTarefaData.getBackground().mutate().setTint(getResources().getColor(android.R.color.white, null));
+        editTarefaData.setFocusable(false);
+        editTarefaData.setClickable(true);
+        editTarefaData.setHint("Data");
+        editTarefaData.setTextColor(Color.parseColor("#FFFFFF"));
+        editTarefaData.setHintTextColor(Color.parseColor("#FFFFFF"));
+
+        editTarefaNome.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
+        editTarefaData.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
+
+
+        // Ao clicar abre DatePicker
+        editTarefaData.setOnClickListener(v -> {
+            Calendar calendar = Calendar.getInstance();
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+            DatePickerDialog datePicker = new DatePickerDialog(this, (view, selectedYear, selectedMonth, selectedDay) -> {
+                String dataFormatada = String.format("%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
+                editTarefaData.setText(dataFormatada);
+            }, year, month, day);
+
+            datePicker.show();
+        });
 
         tarefaLayout.addView(editTarefaNome);
         tarefaLayout.addView(editTarefaData);
+
         containerTarefas.addView(tarefaLayout);
     }
+
+
 
     private void adicionarUsuario() {
         EditText editEmail = new EditText(this);
@@ -120,7 +150,7 @@ public class AddProjetoActivity extends AppCompatActivity {
             }
         }
 
-        // 2️⃣ Criar lista de emails
+        // Criar lista de emails
         List<String> listaEmails = new ArrayList<>();
         for (int i = 0; i < containerUsuarios.getChildCount(); i++) {
             EditText editEmail = (EditText) containerUsuarios.getChildAt(i);
@@ -135,19 +165,22 @@ public class AddProjetoActivity extends AppCompatActivity {
             listaEmails.add(emailAtual);
         }
 
-        // 3️⃣ Criar projeto
+        // Criar projeto
         Projeto projeto = new Projeto(titulo, "Por começar", new ArrayList<>(), listaEmails);
 
-        // Usar FirebaseHelper.criarProjeto
         FirebaseHelper.criarProjeto(projeto, (documentRef, error) -> {
             if (documentRef != null) {
                 String projetoId = documentRef.getId();
 
-                // Adicionar cada tarefa usando adicionarTarefa
+                // Adicionar cada tarefa e agendar notificação
                 for (Tarefa tarefa : listaTarefas) {
                     FirebaseHelper.adicionarTarefa(projetoId, tarefa, (success, errMsg) -> {
                         if (!success) {
                             Toast.makeText(this, "Erro ao salvar tarefa: " + errMsg, Toast.LENGTH_SHORT).show();
+                        } else {
+                            // Aqui agendamos a notificação
+                            NotificacaoHelper.criarCanal(this);
+                            NotificacaoHelper.agendarNotificacao(this, tarefa.titulo, tarefa.dataConclusao);
                         }
                     });
                 }
@@ -158,6 +191,7 @@ public class AddProjetoActivity extends AppCompatActivity {
             }
         });
     }
+
 
     @Override
     public boolean onSupportNavigateUp() {

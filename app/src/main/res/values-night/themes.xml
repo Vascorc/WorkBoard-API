@@ -1,14 +1,23 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.ProjetoIndividual" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <!-- Fundo da janela -->
-        <item name="android:windowBackground">#121212</item>
+    <style name="Theme.ProjetoIndividual" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color (azul Hevy) -->
+        <item name="colorPrimary">@color/hevy_blue</item>
+        <item name="colorPrimaryVariant">@color/hevy_blue</item>
+        <item name="colorOnPrimary">@color/hevy_text</item>
 
-        <!-- Cor principal da marca -->
-        <item name="colorPrimary">#267EE8</item>
-        <item name="colorPrimaryVariant">#267EE8</item>
+        <!-- Secondary brand color -->
+        <item name="colorSecondary">@color/hevy_blue</item>
+        <item name="colorSecondaryVariant">@color/hevy_blue</item>
+        <item name="colorOnSecondary">@color/hevy_text</item>
 
-        <!-- Texto em branco para contraste -->
-        <item name="android:textColor">#FFFFFF</item>
+        <!-- Status bar color -->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+
+        <!-- Fundo da aplicação -->
+        <item name="android:windowBackground">@color/hevy_background</item>
+
+        <!-- Texto padrão -->
+        <item name="android:textColor">@color/hevy_text</item>
     </style>
 </resources>

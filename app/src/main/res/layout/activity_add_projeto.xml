@@ -12,23 +12,15 @@
         android:id="@+id/topAppBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
+        android:background="@color/hevy_blue"
         android:title="Adicionar Projeto"
-        android:titleTextColor="@android:color/white"
+        android:titleTextColor="#FFFFFF"
         app:navigationIcon="@drawable/ic_arrow_back"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Guideline horizontal no final do primeiro terço -->
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guidelineTerco"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.24" />
-
-    <!-- ScrollView com campos -->
+    <!-- ScrollView -->
     <ScrollView
         android:id="@+id/scrollTarefas"
         android:layout_width="0dp"
@@ -44,20 +36,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp"
-            android:gravity="center_horizontal">
+            android:padding="16dp">
 
             <!-- Título do projeto -->
-            <EditText
-                android:id="@+id/editTituloProjeto"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Título do projeto"
-                android:inputType="textCapSentences"
-                android:layout_marginBottom="24dp"
-                android:textColor="@android:color/white"
-                android:textColorHint="@android:color/white"
-                android:backgroundTint="@android:color/white"/>
+                android:layout_marginBottom="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTituloProjeto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#5D5B5B"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Container para tarefas -->
             <LinearLayout
@@ -65,21 +59,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:divider="@android:color/white"
+                android:divider="@color/hevy_background"
                 android:showDividers="middle"
-                android:textColor="@android:color/white"
-                android:textColorHint="@android:color/white"
-                android:backgroundTint="@android:color/white"/>
+                android:paddingVertical="8dp"/>
 
-            <!-- Botão para adicionar nova tarefa -->
+            <!-- Botão adicionar tarefa -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnAdicionarTarefa"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Adicionar Tarefa"
-                android:textColor="@android:color/white"
+                android:textColor="#FFFFFF"
                 android:layout_marginTop="16dp"
-                android:layout_gravity="center_horizontal"/>
+                android:layout_gravity="center_horizontal"
+                app:cornerRadius="24dp"
+                app:backgroundTint="@color/hevy_blue"/>
 
             <!-- Container para usuários -->
             <LinearLayout
@@ -88,18 +82,21 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_marginTop="24dp"
-                android:divider="@android:color/white"
-                android:showDividers="middle"/>
+                android:divider="@color/hevy_background"
+                android:showDividers="middle"
+                android:paddingVertical="8dp"/>
 
-            <!-- Botão para adicionar responsável -->
+            <!-- Botão adicionar responsável -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnAdicionarUsuario"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Adicionar Responsável (Email)"
-                android:textColor="@android:color/white"
+                android:text="Adicionar Responsável"
+                android:textColor="#FFFFFF"
                 android:layout_marginTop="16dp"
-                android:layout_gravity="center_horizontal"/>
+                android:layout_gravity="center_horizontal"
+                app:cornerRadius="24dp"
+                app:backgroundTint="@color/hevy_blue"/>
 
         </LinearLayout>
     </ScrollView>
@@ -110,8 +107,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Salvar Projeto"
-        android:textColor="@android:color/white"
+        android:textColor="#FFFFFF"
         android:layout_margin="16dp"
+        app:cornerRadius="24dp"
+        app:backgroundTint="@color/hevy_blue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>

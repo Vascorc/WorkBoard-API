@@ -34,6 +34,16 @@
             android:padding="8dp" />
     </ScrollView>
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnAdicionarTarefa"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="Adicionar Tarefa"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        app:cornerRadius="50dp"
+        app:backgroundTint="#3C6CDC" />
     <!-- Barra inferior moderna -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
