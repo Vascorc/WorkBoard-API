@@ -14,4 +14,9 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="TimePickerBlue" >
+        <item name="android:textColorPrimary">#2196F3</item> <!-- azul -->
+        <item name="android:colorAccent">#2196F3</item>
+    </style>
+
 </resources>

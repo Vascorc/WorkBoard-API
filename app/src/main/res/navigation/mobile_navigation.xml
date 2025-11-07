@@ -23,6 +23,11 @@
         android:label="Calendário"
         tools:layout="@layout/fragment_calendario" />
 
+    <fragment
+        android:id="@+id/nav_settings"
+        android:name="com.example.projetoindividual.settings.SettingsFragment"
+        android:label="Definições"
+        tools:layout="@layout/fragment_settings" />
 
 
 </navigation>

@@ -21,6 +21,7 @@ import com.example.projetoindividual.R;
 import com.example.projetoindividual.database.FirebaseHelper;
 import com.example.projetoindividual.model.Projeto;
 import com.example.projetoindividual.model.Tarefa;
+import com.example.projetoindividual.notificacoes.NotificacaoWorker;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -125,6 +126,7 @@ public class ProjetoDetalheActivity extends AppCompatActivity {
             });
 
             btnApagar.setOnClickListener(v -> {
+
                 FirebaseHelper.removerTarefa(projeto.id, tarefa.id, tarefa, (success, error) -> {
                     if (success) {
                         Toast.makeText(this, "Tarefa removida", Toast.LENGTH_SHORT).show();
@@ -216,17 +218,14 @@ public class ProjetoDetalheActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
     private void abrirDialogAdicionarTarefa() {
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_nova_tarefa, null);
         EditText edtTitulo = dialogView.findViewById(R.id.edtTituloTarefa);
         EditText edtData = dialogView.findViewById(R.id.edtDataTarefa);
 
-        // Faz o campo de data não focável, para abrir apenas o DatePicker
         edtData.setFocusable(false);
         edtData.setClickable(true);
 
-        // Abre DatePicker ao clicar
         edtData.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
             int year = calendar.get(Calendar.YEAR);
@@ -234,7 +233,6 @@ public class ProjetoDetalheActivity extends AppCompatActivity {
             int day = calendar.get(Calendar.DAY_OF_MONTH);
 
             DatePickerDialog datePicker = new DatePickerDialog(this, (view, selectedYear, selectedMonth, selectedDay) -> {
-                // Formata a data como YYYY-MM-DD
                 String dataFormatada = String.format("%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
                 edtData.setText(dataFormatada);
             }, year, month, day);
@@ -242,7 +240,6 @@ public class ProjetoDetalheActivity extends AppCompatActivity {
             datePicker.show();
         });
 
-        // Cria o builder do diálogo
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
         builder.setView(dialogView);
 
@@ -269,7 +266,13 @@ public class ProjetoDetalheActivity extends AppCompatActivity {
             FirebaseHelper.adicionarTarefa(projeto.id, novaTarefa, (success, error) -> {
                 if (success) {
                     projeto.tarefas.add(novaTarefa);
-                    mostrarTarefas(); // Atualiza a lista imediatamente
+                    mostrarTarefas();
+
+// Agendar notificação
+                    NotificacaoWorker.agendar(this, novaTarefa.titulo, novaTarefa.dataConclusao);
+
+
+
                     Toast.makeText(this, "Tarefa adicionada!", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 } else {
@@ -281,5 +284,6 @@ public class ProjetoDetalheActivity extends AppCompatActivity {
         btnCancelar.setOnClickListener(v -> dialog.dismiss());
         dialog.show();
     }
+
 
 }

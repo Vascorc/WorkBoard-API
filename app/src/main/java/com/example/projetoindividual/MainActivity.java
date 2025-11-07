@@ -7,7 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -51,9 +50,6 @@ public class MainActivity extends AppCompatActivity {
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
 
-        // Inicializa o canal de notificações
-        NotificacaoHelper.criarCanal(this);
-
         // Inicializa o launcher da permissão
         requestPermissionLauncher = registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
@@ -65,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         );
 
         // Pede permissão para notificações se necessário
-        pedirPermissaoNotificacoes();
+        pedirPermissoesNotificacoesELembretes();
 
         // Atualiza nome e e-mail do utilizador no header do menu lateral
         View headerView = navigationView.getHeaderView(0);
@@ -110,14 +106,17 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void pedirPermissaoNotificacoes() {
+    private void pedirPermissoesNotificacoesELembretes() {
+        //  Permissão de notificações
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
                     != PackageManager.PERMISSION_GRANTED) {
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
             }
         }
+
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

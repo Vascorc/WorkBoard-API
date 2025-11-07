@@ -12,7 +12,7 @@ public class Tarefa implements Serializable {
     public boolean concluida;
 
     public Tarefa() {} //pode ser preciso
-    // 2. Criar um construtor principal que inclui todos os campos
+    // Criar um construtor principal que inclui todos os campos
     public Tarefa(String id, String titulo, String dataConclusao, boolean concluida, String projetoId) {
         this.id = id;
         this.titulo = titulo;
@@ -21,7 +21,7 @@ public class Tarefa implements Serializable {
         this.projetoId = projetoId;
     }
 
-    // 3. Criar um construtor secundário para quando se cria uma tarefa nova (sem ID)
+    // Criar um construtor secundário para quando se cria uma tarefa nova (sem ID)
     public Tarefa(String titulo,String dataConclusao, boolean concluida) {
         this.titulo = titulo;
         this.dataConclusao = dataConclusao;

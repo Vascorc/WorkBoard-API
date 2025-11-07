@@ -14,10 +14,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.projetoindividual.database.FirebaseHelper;
 import com.example.projetoindividual.model.Projeto;
 import com.example.projetoindividual.model.Tarefa;
+import com.example.projetoindividual.notificacoes.NotificacaoWorker;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
@@ -178,9 +178,8 @@ public class AddProjetoActivity extends AppCompatActivity {
                         if (!success) {
                             Toast.makeText(this, "Erro ao salvar tarefa: " + errMsg, Toast.LENGTH_SHORT).show();
                         } else {
-                            // Aqui agendamos a notificação
-                            NotificacaoHelper.criarCanal(this);
-                            NotificacaoHelper.agendarNotificacao(this, tarefa.titulo, tarefa.dataConclusao);
+                            // Agendar notificação
+                            NotificacaoWorker.agendar(this, tarefa.titulo, tarefa.dataConclusao);
                         }
                     });
                 }
