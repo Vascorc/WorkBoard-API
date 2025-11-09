@@ -18,21 +18,6 @@ public class FirebaseHelper {
     private static final FirebaseAuth auth = FirebaseAuth.getInstance();
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    // =========================
-    // AUTENTICAÇÃO
-    // =========================
-
-    public static FirebaseUser getCurrentUser() {
-        return auth.getCurrentUser();
-    }
-
-    public static void logout() {
-        auth.signOut();
-    }
-
-    // =========================
-    // PROJETOS
-    // =========================
 
     // Criar um novo projeto
     public static void criarProjeto(Projeto projeto, FirebaseCallback<DocumentReference> callback) {
@@ -106,28 +91,6 @@ public class FirebaseHelper {
                             .addOnSuccessListener(aVoid2 -> callback.onComplete(true, null))
                             .addOnFailureListener(e -> callback.onComplete(false, e.getMessage()));
                 })
-                .addOnFailureListener(e -> callback.onComplete(false, e.getMessage()));
-    }
-
-    // =========================
-    // USUÁRIOS
-    // =========================
-
-    // Adicionar um usuário a um projeto
-    public static void adicionarUsuario(String projetoId, String email, FirebaseCallback<Boolean> callback) {
-        db.collection("projetos")
-                .document(projetoId)
-                .update("usuarios", FieldValue.arrayUnion(email))
-                .addOnSuccessListener(aVoid -> callback.onComplete(true, null))
-                .addOnFailureListener(e -> callback.onComplete(false, e.getMessage()));
-    }
-
-    // Remover um usuário de um projeto
-    public static void removerUsuario(String projetoId, String email, FirebaseCallback<Boolean> callback) {
-        db.collection("projetos")
-                .document(projetoId)
-                .update("usuarios", FieldValue.arrayRemove(email))
-                .addOnSuccessListener(aVoid -> callback.onComplete(true, null))
                 .addOnFailureListener(e -> callback.onComplete(false, e.getMessage()));
     }
 

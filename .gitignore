@@ -1,0 +1,27 @@
+# Configurações do Android Studio
+.idea/
+*.iml
+*.iws
+
+# Build folders
+/build/
+*/build/
+
+# Local properties (não commitado, pois depende do SDK local)
+local.properties
+
+# Logs
+*.log
+
+# Diretórios gerados automaticamente
+captures/
+output.json
+
+# Kotlin
+*.kotlin_module
+
+# Firebase
+google-services.json
+
+# Outros arquivos temporários do Android Studio
+.gradle/

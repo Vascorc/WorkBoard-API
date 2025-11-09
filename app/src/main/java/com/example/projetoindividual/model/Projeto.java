@@ -6,7 +6,6 @@ import java.util.List;
 
 public class Projeto implements Serializable {
 
-    //1. Adicionar o campo 'id'
     public String id;
     public List<String> users; // IDs dos usuários que trabalham no projeto
 
@@ -31,7 +30,6 @@ public class Projeto implements Serializable {
         this.users = users;
     }
 
-    // 2. Criar um novo construtor que inclui o 'id'
     public Projeto(String id, String nome, List<Tarefa> tarefas) {
         this.id = id;
         this.nome = nome;
@@ -39,7 +37,7 @@ public class Projeto implements Serializable {
         this.estado = calcularEstado();
     }
 
-    // 3. Manter (ou criar) um construtor sem 'id' para quando se cria um projeto novo
+    //  Manter (ou criar) um construtor sem 'id' para quando se cria um projeto novo
     //    O ID será gerado pela base de dados.
     public Projeto(String nome, List<Tarefa> tarefas) {
         this.nome = nome;
@@ -63,7 +61,6 @@ public class Projeto implements Serializable {
     }
 
 
-    // 4. Renomear o método 'getStatus()' para ser um getter padrão (boa prática)
     public String getEstado() {
         return estado;
     }
